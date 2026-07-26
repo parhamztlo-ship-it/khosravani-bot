@@ -97,9 +97,11 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 if __name__ == '__main__':
     print("ربات در حال اجرا است...")
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
-
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.VOICE, handle_voice))
     app.add_handler(CallbackQueryHandler(button_callback))
-
-    app.run_polling()
+    
+    # استفاده از webhook به جای polling برای Render
+    port = int(os.environ.get('PORT', 10000))
+    app.run_webhook(listen="0.0.0.0", port=port, 
+                    webhook_url="https://khosravani-music-bot.onrender.com/")
