@@ -2,6 +2,8 @@ import os
 import requests
 import telebot
 from telebot import types
+from flask import Flask
+import threading
 
 # ====== توکن‌ها ======
 TELEGRAM_TOKEN = "8799705703:AAG3UUjtHcnTXty-Hn8iXfT8jkhvWa137ck"
@@ -10,15 +12,16 @@ AUDD_API_TOKEN = "اینجا_توکن_audd_رو_بذار"
 
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
 user_data = {}
+app = Flask(__name__)
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.reply_to(message, "سلام! 🎵\nیک پیام صوتی (Voice) برام بفرست تا آهنگش رو تشخیص بدم.")
+    bot.reply_to(message, "درود! 🎵\nیک پیام صوتی (Voice) برام بفرست تا آهنگش رو تشخیص بدم.")
 
 @bot.message_handler(content_types=['voice'])
 def handle_voice(message):
     user_id = message.from_user.id
-    msg = bot.reply_to(message, "در حال بررسی پیام صوتی شما... ⏳")
+    bot.reply_to(message, "در حال بررسی پیام صوتی شما... ⏳")
     
     try:
         file_info = bot.get_file(message.voice.file_id)
@@ -28,7 +31,6 @@ def handle_voice(message):
         with open(file_path, 'wb') as f:
             f.write(downloaded_file)
         
-        # ارسال به AudD
         url = "https://api.audd.io/"
         with open(file_path, 'rb') as f:
             files = {'file': f}
@@ -97,6 +99,18 @@ def handle_callback(call):
     except (IndexError, ValueError):
         bot.answer_callback_query(call.id, "گزینه نامعتبر.")
 
-if __name__ == '__main__':
-    print("ربات در حال اجرا است...")
+@app.route('/')
+def index():
+    return "ربات در حال اجراست!", 200
+
+def run_bot():
     bot.infinity_polling()
+
+if __name__ == '__main__':
+    # اجرای ربات در یک ترد جداگانه
+    bot_thread = threading.Thread(target=run_bot)
+    bot_thread.start()
+    
+    # اجرای سرور Flask برای Render
+    port = int(os.environ.get('PORT', 10000))
+    app.run(host='0.0.0.0', port=port)
