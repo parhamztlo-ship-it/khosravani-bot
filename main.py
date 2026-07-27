@@ -4,7 +4,7 @@ import telebot
 from telebot import types
 
 # ====== توکن‌ها ======
-TELEGRAM_TOKEN = "8799705703:AAG3UUjtHcnTXty-Hn8iXfT8jkhvWa137ck"
+TELEGRAM_TOKEN = "8799705703:AAG3UUjtHcnTXty-Hn8iXfT8jkhVWa137ck"
 AUDD_API_TOKEN = "اینجا_توکن_audd_رو_بذار"
 # ===================
 
