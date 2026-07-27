@@ -100,3 +100,20 @@ def handle_callback(call):
 if __name__ == '__main__':
     print("ربات در حال اجرا است...")
     bot.infinity_polling()
+from flask import Flask
+import threading
+
+app = Flask(__name__)
+
+@app.route('/')
+def health_check():
+    return "ربات در حال اجراست!", 200
+
+def run_bot():
+    bot.infinity_polling()
+
+if __name__ == '__main__':
+    bot_thread = threading.Thread(target=run_bot)
+    bot_thread.start()
+    port = int(os.environ.get('PORT', 10000))
+    app.run(host='0.0.0.0', port=port)
